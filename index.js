@@ -1,5 +1,6 @@
 const path = require("node:path");
 const crypto = require("node:crypto");
+const os = require("node:os");
 const fs = require("fs");
 const { spawn } = require("child_process");
 
@@ -8,8 +9,18 @@ const input = require("readline-sync");
 
 const { parseCustomJson } = require("./parser.js");
 
-const INSTALL_DIR = path.join(process.env.APPDATA, "SyncKeeper_by_gXLg");
-const SYNC_INTERVAL = 1000 * 60 * 10; // 10 minutes
+function getAppDir() {
+  switch (process.platform) {
+    case "win32":
+      return process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming");
+    case "darwin":
+      return path.join(os.homedir(), "Library", "Application Support");
+    case "linux":
+      return process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config");
+    default:
+      throw new Error(`Unsupported platform: ${process.platform}`);
+  }
+}
 
 function prompt(text, filterMap) {
   while (true) {
@@ -29,6 +40,9 @@ function promptConfirm(action) {
 }
 
 async function main() {
+  const INSTALL_DIR = path.join(getAppDir(), "SyncKeeper_by_gXLg");
+  const SYNC_INTERVAL = 1000 * 60 * 10; // 10 minutes
+
   console.log();
   console.log("- SyncKeeper - Author: gXLg - Date: Nov 2026 - LICENSE: MIT -");
   console.log();
