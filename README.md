@@ -1,2 +1,3 @@
-# sync-keeper-client
+# <img align="top" src="https://static.wikia.nocookie.net/core-keeper/images/b/b8/Recall_Idol.png/revision/latest?cb=20220313041921" height="48"> Sync Keeper | Client
+
 World synchronisation solution for Core Keeper
