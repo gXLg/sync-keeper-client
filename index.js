@@ -13,8 +13,6 @@ function getAppDir() {
   switch (process.platform) {
     case "win32":
       return process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming");
-    case "darwin":
-      return path.join(os.homedir(), "Library", "Application Support");
     case "linux":
       return process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config");
     default:
