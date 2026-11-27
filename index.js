@@ -22,7 +22,7 @@ function getAppDir() {
 
 async function prompt(input, text, filterMap) {
   while (true) {
-    const answer = await input.question(text + "\n    ").trim();
+    const answer = await input.question(text + "\n    ").then(a => a.trim());
     const { keep, value } = filterMap(answer);
     if (keep) return value;
     console.log("Wrong format, please re-check your input and try again!");
