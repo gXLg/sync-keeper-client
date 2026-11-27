@@ -37,7 +37,7 @@ async function promptConfirm(input, action) {
   await prompt(input, `Press [Enter] to ${action ?? "continue"} ...`, a => ({ "keep": true }));
 }
 
-async function main(input) {
+async function main(input, cmd, args) {
   const INSTALL_DIR = path.join(getAppDir(), "SyncKeeper_by_gXLg");
   const SYNC_INTERVAL = 1000 * 60 * 10; // 10 minutes
 
@@ -217,10 +217,8 @@ async function main(input) {
   console.log("-- STARTING GAME --");
   console.log();
 
-  const argv0 = process.argv[2];
-  const args = process.argv.slice(3);
-  console.log(argv0, args);
-  const child = spawn(argv0, args, { "detached": false, "stdio": ["ignore", "inherit", "inherit"] });
+  console.log(cmd, args);
+  const child = spawn(cmd, args, { "detached": false, "stdio": ["ignore", "inherit", "inherit"] });
   await new Promise(res => child.once("close", res));
 
   console.log();
@@ -233,14 +231,14 @@ async function main(input) {
   }
 }
 
-async function wrapTerminal(input) {
+async function wrapTerminal(input, cmd, ...args) {
   process.on("SIGINT", () => {
     console.log("\rCTRL+C pressed, exitting ...");
     process.exit(0);
   });
 
   try {
-    await main(input);
+    await main(input, cmd, args);
     console.log();
     console.log("-- CLIENT FINISHED --");
     console.log();
