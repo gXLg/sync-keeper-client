@@ -5,7 +5,7 @@ const fs = require("fs");
 const { spawn } = require("child_process");
 
 const axios = require("axios");
-const input = require("readline-sync");
+const { relaunchInTerminal } = require("node-relaunch");
 
 const { parseCustomJson } = require("./parser.js");
 
@@ -22,24 +22,24 @@ function getAppDir() {
   }
 }
 
-function prompt(text, filterMap) {
+async function prompt(input, text, filterMap) {
   while (true) {
-    const answer = input.question(text + "\n    ").trim();
+    const answer = await input.question(text + "\n    ").trim();
     const { keep, value } = filterMap(answer);
     if (keep) return value;
     console.log("Wrong format, please re-check your input and try again!");
   }
 }
 
-function promptFilter(text, filter) {
-  return prompt(text, value => ({ "keep": filter(value), value }));
+async function promptFilter(input, text, filter) {
+  return await prompt(input, text, value => ({ "keep": filter(value), value }));
 }
 
-function promptConfirm(action) {
-  prompt(`Press [Enter] to ${action ?? "continue"} ...`, a => ({ "keep": true }));
+async function promptConfirm(input, action) {
+  await prompt(input, `Press [Enter] to ${action ?? "continue"} ...`, a => ({ "keep": true }));
 }
 
-async function main() {
+async function main(input) {
   const INSTALL_DIR = path.join(getAppDir(), "SyncKeeper_by_gXLg");
   const SYNC_INTERVAL = 1000 * 60 * 10; // 10 minutes
 
@@ -166,7 +166,8 @@ async function main() {
   }
   console.log("'".repeat(tableWidth));
 
-  const selected = prompt(
+  const selected = await prompt(
+    input,
     "Select a world for SyncPlay or press [Enter] to not sync any worlds:",
     v => {
       if (v.length == 0) return { "keep": true, "value": null };
@@ -234,15 +235,14 @@ async function main() {
   }
 }
 
-(async () => {
-
+async function wrapTerminal(input) {
   process.on("SIGINT", () => {
     console.log("\rCTRL+C pressed, exitting ...");
     process.exit(0);
   });
 
   try {
-    await main();
+    await main(input);
     console.log();
     console.log("-- CLIENT FINISHED --");
     console.log();
@@ -254,7 +254,10 @@ async function main() {
     console.log();
     console.error(err);
     console.log();
-    promptConfirm("exit");
+    await promptConfirm(input, "exit");
   }
+}
 
+(async () => {
+  await relaunchInTerminal("Sync Keeper", wrapTerminal);
 })();
