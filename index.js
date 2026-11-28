@@ -189,6 +189,18 @@ async function main(input, cmd, args) {
     } else {
       console.log();
       const { lockId, map, gen, info, world } = data;
+      if (!fs.existsSync(path.join(folder, "servermaps"))) {
+        fs.mkdirSync(path.join(folder, "servermaps"));
+      }
+      if (!fs.existsSync(path.join(folder, "worldgenparams"))) {
+        fs.mkdirSync(path.join(folder, "worldgenparams"));
+      }
+      if (!fs.existsSync(path.join(folder, "worldinfos"))) {
+        fs.mkdirSync(path.join(folder, "worldinfos"));
+      }
+      if (!fs.existsSync(path.join(folder, "worlds"))) {
+        fs.mkdirSync(path.join(folder, "worlds"));
+      }
       fs.writeFileSync(path.join(folder, "servermaps", `${selected.index}.mapparts.gzip`), Buffer.from(map, "base64"));
       fs.writeFileSync(path.join(folder, "worldgenparams", `${selected.index}.json`), Buffer.from(gen, "base64"));
       fs.writeFileSync(path.join(folder, "worldinfos", `${selected.index}.worldinfo`), Buffer.from(info, "base64"));
